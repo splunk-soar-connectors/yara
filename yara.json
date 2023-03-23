@@ -254,7 +254,18 @@
                     "name": "use_includes"
                 },
                 "scan_dir": {
-                    "description": "Directory to scan for matches.  If not specified,",
+                    "description": "Directory to scan for matches.  If not specified, vault_id is required.",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 2,
+                    "name": "scan_dir"
+                },
+                "vault_id": {
+                    "description": "Vault ID of a file to look up for scanning.  If not specified scan_dir is required.",
                     "data_type": "string",
                     "required": false,
                     "primary": false,

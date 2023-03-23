@@ -121,21 +121,22 @@ class YaraConnector(BaseConnector):
         """
 
         action_result = self.add_action_result(ActionResult(dict(param)))
-        extension: str = param.get("path", "**")
-        for file in Path(self.state_dir).rglob(extension):
-            file_info = {}
-            if param.get("stat_info", False):
-                file_info = Path(file).stat()
-            action_result.add_data(
-                {
-                    **{"name": str(Path(file))},
-                    **{
-                        key: getattr(file_info, key)
-                        for key in dir(file_info)
-                        if key.startswith("st_")
-                    },
-                }
-            )
+        extension: str = param.get("path", "*")
+        for file in Path(self.state_dir).glob(extension):
+            if not file.name.endswith("state.json"):
+                file_info = {}
+                if param.get("stat_info", False):
+                    file_info = Path(file).stat()
+                action_result.add_data(
+                    {
+                        **{"name": str(Path(file))},
+                        **{
+                            key: getattr(file_info, key)
+                            for key in dir(file_info)
+                            if key.startswith("st_")
+                        },
+                    }
+                )
 
         return self._return_with_message(f"Listed sources!", action_result)
 
@@ -165,8 +166,8 @@ class YaraConnector(BaseConnector):
                 rules = yara.compile(
                     filepaths={
                         file.name: str(file)
-                        for file in Path(self.state_dir).rglob(
-                            param.get("yara_path", "**")
+                        for file in Path(self.state_dir).glob(
+                            param.get("yara_path", "**/*.yar")
                         )
                     },
                     includes=param.get("use_includes", False),
@@ -180,12 +181,18 @@ class YaraConnector(BaseConnector):
         # in the class signature.  Then, unpack to keyword arguments for set_config()
         yara.set_config(**vars(yara_config.YaraConfig.from_params((param))))
 
-        # Prefer scan_dir if provided, falling back to the vault from event's container
-        scan_dir: str = param.get(
-            "scan_dir", vault.vault_info(container_id=self.get_container_id())
+        if param.get("scan_dir", None) and param.get("vault_id", None):
+            self._return_with_message(
+                "You can only specify one of scan_dir and vault_id here.",
+                action_result,
+                APP_ERROR,
+            )
+
+        scan_location: str = param.get(
+            "scan_dir", vault.vault_info(vault_id=param.get("vault_id"))
         )
-        self.save_progress(f"Scanning {scan_dir} with loaded Yara rules")
-        for file in Path(scan_dir).glob("**/*"):
+        self.save_progress(f"Scanning {scan_location} with loaded Yara rules")
+        for file in Path(scan_location).glob("**/*"):
             if not file.is_dir():
                 try:
                     self.save_progress(f"Scanning {file}")
@@ -211,7 +218,9 @@ class YaraConnector(BaseConnector):
                     message = f"Timeout when scanning {file}.  Specify a larger timeout and try again."
                     return self._return_with_message(message, action_result, APP_ERROR)
 
-        return self._return_with_message(f"Finished scanning {scan_dir}", action_result)
+        return self._return_with_message(
+            f"Finished scanning {scan_location}", action_result
+        )
 
     def handle_action(self, param: Dict[str, Any]) -> RetVal:
         ret_val = APP_SUCCESS
