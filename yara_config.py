@@ -2,11 +2,7 @@ import inspect
 from dataclasses import dataclass
 from typing import Optional
 
-from yara_consts import (
-    YARA_DEFAULT_MAX_MATCH_DATA,
-    YARA_DEFAULT_MAX_STRINGS_PER_RULE,
-    YARA_DEFAULT_STACK_SIZE,
-)
+from yara_consts import YARA_DEFAULT_MAX_MATCH_DATA, YARA_DEFAULT_MAX_STRINGS_PER_RULE, YARA_DEFAULT_STACK_SIZE
 
 
 @dataclass
