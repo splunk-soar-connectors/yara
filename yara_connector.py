@@ -53,7 +53,7 @@ class YaraConnector(BaseConnector):
             return
 
         if response.headers.get("Content-Type", "").find("application/zip") > -1:
-            self.save_progress(f"Extracting downloaded zip")
+            self.save_progress("Extracting downloaded zip")
             with zipfile.ZipFile(io.BytesIO(response.content)) as zip:
                 zip.extractall(path=self.state_dir)
 
@@ -138,7 +138,7 @@ class YaraConnector(BaseConnector):
                     }
                 )
 
-        return self._return_with_message(f"Listed sources!", action_result)
+        return self._return_with_message("Listed sources!", action_result)
 
     def _handle_yara_scan(self, param) -> RetVal:
         """
