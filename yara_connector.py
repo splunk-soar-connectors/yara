@@ -1,17 +1,16 @@
 #!/usr/bin/python3
-import zipfile
 import hashlib
 import io
-from typing import Dict, Any, Tuple
+import zipfile
 from pathlib import Path, PurePath
-
-from phantom.app import APP_SUCCESS, APP_ERROR
-from phantom import vault
-from phantom.base_connector import BaseConnector
-from phantom.action_result import ActionResult
+from typing import Any, Dict, Tuple
 
 import requests
 import yara
+from phantom import vault
+from phantom.action_result import ActionResult
+from phantom.app import APP_ERROR, APP_SUCCESS
+from phantom.base_connector import BaseConnector
 
 import yara_config
 
