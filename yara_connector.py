@@ -1,17 +1,32 @@
-#!/usr/bin/python3
+# File: yara_connector.py
+#
+# Copyright (c) 2023 Splunk Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under
+# the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied. See the License for the specific language governing permissions
+# and limitations under the License.
+
 import hashlib
 import io
+import sys
 import zipfile
 from pathlib import Path, PurePath
 from typing import Any, Dict, Tuple
 
 import requests
+import yara
 from phantom import vault
 from phantom.action_result import ActionResult
 from phantom.app import APP_ERROR, APP_SUCCESS
 from phantom.base_connector import BaseConnector
 
-import yara
 import yara_config
 
 
@@ -70,6 +85,7 @@ class YaraConnector(BaseConnector):
         """
 
         action_result = self.add_action_result(ActionResult())
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         env_vars = self.get_config().get("_reserved_environment_variables", {})
 
         if env_vars:
@@ -91,6 +107,7 @@ class YaraConnector(BaseConnector):
 
     def _handle_clear_sources(self, param) -> RetVal:
         action_result = self.add_action_result(ActionResult(dict(param)))
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         import shutil
 
         for file in Path(PurePath(self.state_dir, param.get("path", ""))).iterdir():
@@ -120,6 +137,7 @@ class YaraConnector(BaseConnector):
         """
 
         action_result = self.add_action_result(ActionResult(dict(param)))
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         extension: str = param.get("path", "*")
         for file in Path(self.state_dir).glob(extension):
             if not file.name.endswith("state.json"):
@@ -153,6 +171,7 @@ class YaraConnector(BaseConnector):
         """
 
         action_result = self.add_action_result(ActionResult(dict(param)))
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         cached_ruleset = hashlib.blake2b(
             f"{param.get('yara_path', '**')}".encode()
         ).hexdigest()
@@ -225,9 +244,8 @@ class YaraConnector(BaseConnector):
         ret_val = APP_SUCCESS
 
         action_id = self.get_action_identifier()
-        self.save_progress(
-            f"Executing action handler for: {action_id} with params {param}"
-        )
+        self.debug_print("action_id ", action_id)
+
         if action_id == "yara_scan":
             ret_val = self._handle_yara_scan(param)
 
@@ -266,12 +284,14 @@ def main():
     argparser.add_argument("input_test_json", help="Input Test JSON file")
     argparser.add_argument("-u", "--username", help="username", required=False)
     argparser.add_argument("-p", "--password", help="password", required=False)
+    argparser.add_argument('-v', '--verify', action='store_true', help='verify', required=False, default=False)
 
     args = argparser.parse_args()
     session_id = None
 
     username = args.username
     password = args.password
+    verify = args.verify
 
     if username is not None and password is None:
 
@@ -285,7 +305,7 @@ def main():
             login_url = YaraConnector._get_phantom_base_url() + "/login"
 
             print("Accessing the Login page")
-            r = requests.get(login_url, verify=False)  # nosec
+            r = requests.get(login_url, verify=verify)
             csrftoken = r.cookies.get("csrftoken", None)
 
             data = {
@@ -298,12 +318,12 @@ def main():
 
             print("Logging into Platform to get the session id")
             r2 = requests.post(
-                login_url, verify=False, data=data, headers=headers  # nosec
+                login_url, verify=verify, data=data, headers=headers
             )
             session_id = r2.cookies.get("sessionid")
         except Exception as e:
             print(f"Unable to get session id from the platform. Error: {e}")
-            exit(1)
+            sys.exit(1)
 
     with open(args.input_test_json) as filename:
         in_json = json.load(filename)
@@ -319,7 +339,7 @@ def main():
         ret_val = connector._handle_action(json.dumps(in_json), None)
         print(json.dumps(json.loads(ret_val), indent=4))
 
-    exit(0)
+    sys.exit(0)
 
 
 if __name__ == "__main__":

@@ -4,18 +4,19 @@
     "description": "The pattern matching swiss knife for malware researchers (and everyone else)",
     "type": "information",
     "product_vendor": "Virus Total",
-    "logo": "yara.png",
-    "logo_dark": "yara_dark.png",
+    "logo": "logo_yara.svg",
+    "logo_dark": "logo_yara_dark.svg",
     "product_name": "Yara",
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "Splunk Community",
-    "license": "Copyright (c) Splunk Community, 2023",
+    "license": "Copyright (c) 2023 Splunk Inc.",
     "app_version": "1.0.0",
     "utctime_updated": "2023-03-16T20:22:24.483970Z",
     "package_name": "phantom_yara",
     "main_module": "yara_connector.py",
-    "min_phantom_version": "5.3.2.88192",
+    "min_phantom_version": "5.5.0",
+    "fips_compliant": false,
     "app_wizard_version": "1.0.0",
     "contributors": [
         {
@@ -23,13 +24,11 @@
         }
     ],
     "configuration": {},
-    "custom_made": true,
     "actions": [
         {
             "action": "test connectivity",
             "identifier": "test_connectivity",
             "description": "Validate the asset configuration for connectivity using supplied configuration",
-            "verbose": "",
             "type": "test",
             "read_only": true,
             "parameters": {},
@@ -39,25 +38,19 @@
         {
             "action": "clear yara sources",
             "identifier": "clear_yara_sources",
-            "description": "Delete any files stored in the Vault to clear any Yara rules persisted for this asset.",
-            "verbose": "Delete any downloaded files from the location of get_state_dir() .  Defaults to everything in the application's state directory but can optionally accept a path parameter that is provided to pathlib.Path().rglob() to limit what is removed.",
+            "description": "Delete any files stored in the Vault to clear any Yara rules persisted for this asset",
+            "verbose": "Delete any downloaded files from the location of get_state_dir().  Defaults to everything in the application's state directory but can optionally accept a path parameter that is provided to pathlib.Path().rglob() to limit what is removed.",
             "type": "generic",
             "read_only": false,
             "parameters": {
                 "path": {
-                    "description": "A valid file glob, relative to the value of the app's state directory.",
+                    "description": "A valid file glob, relative to the value of the app's state directory",
                     "data_type": "string",
-                    "required": false,
                     "primary": true,
                     "contains": [
                         "file path"
                     ],
-                    "value_list": [],
-                    "default": "",
-                    "order": 0,
-                    "name": "path",
-                    "id": 1,
-                    "param_name": "path"
+                    "order": 0
                 }
             },
             "output": [
@@ -67,14 +60,18 @@
                     "contains": [
                         "file path"
                     ],
-                    "column_name": "path",
+                    "column_name": "Path",
                     "column_order": 0
                 },
                 {
                     "data_path": "action_result.status",
                     "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 1
+                    "column_name": "Status",
+                    "column_order": 1,
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -105,7 +102,7 @@
         {
             "action": "update yara sources",
             "identifier": "update_yara_sources",
-            "description": "Download and persist any rule sources defined in assets associated with this app.",
+            "description": "Download and persist any rule sources defined in assets associated with this app",
             "verbose": "This will reach out to any configured asset to download a set of rules that can saved and used at a later time.  Running will overwrite any previously saved sources matching the file path.   Asset configuration should include the URL(s) of the remote location(s) to fetch and any needed credentials.",
             "type": "generic",
             "read_only": false,
@@ -114,8 +111,12 @@
                 {
                     "data_path": "action_result.status",
                     "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 0
+                    "column_name": "Status",
+                    "column_order": 0,
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -146,7 +147,7 @@
         {
             "action": "list yara sources",
             "identifier": "list_yara_sources",
-            "description": "List sources of Yara rules previously downloaded and stored in the Vault.",
+            "description": "List sources of Yara rules previously downloaded and stored in the Vault",
             "verbose": "List the downloaded Yara rules that are stored in the location of get_state_dir().  This will optionally accept a path parameter that, if present, will be provided to pathlib.Path().rglob() for searching for a subset of downloaded files relative to the application's state directory.  This would allow for consuming a subset of the asset's downloaded sources for various use cases.",
             "type": "generic",
             "read_only": true,
@@ -154,30 +155,16 @@
                 "path": {
                     "description": "A relative path to provide for listing specific files in the app's state_dir.  Defaults to \"**\", or directories in state_dir.  Some examples could be \"**/*.yar\" or \"malware-rules/**\"",
                     "data_type": "string",
-                    "required": false,
                     "primary": true,
                     "contains": [
                         "file path"
                     ],
-                    "value_list": [],
-                    "default": "",
-                    "order": 0,
-                    "name": "path",
-                    "id": 1,
-                    "param_name": "path"
+                    "order": 0
                 },
                 "stat_info": {
-                    "description": "A boolean to optionally return the information from os.stat_result for each file object found.  Defaults to False.",
+                    "description": "A boolean to optionally return the information from os.stat_result for each file object found.  Defaults to False",
                     "data_type": "boolean",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 0,
-                    "name": "stat_info",
-                    "id": 1,
-                    "param_name": "stat_info"
+                    "order": 1
                 }
             },
             "output": [
@@ -187,14 +174,26 @@
                     "contains": [
                         "file path"
                     ],
-                    "column_name": "path",
+                    "column_name": "Path",
                     "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.stat_info",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
                 },
                 {
                     "data_path": "action_result.status",
                     "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 1
+                    "column_name": "Status",
+                    "column_order": 1,
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -226,114 +225,57 @@
             "action": "yara scan",
             "identifier": "yara_scan",
             "description": "Compile (if needed) any specified Yara rules and scan specified target for matches",
-            "verbose": "U",
             "type": "investigate",
             "read_only": true,
             "parameters": {
                 "yara_path": {
-                    "description": "String to use for recursive file glob, relative to state directory, for locating Yara rules to use in scan.  Defaults to all files in the state directory.",
+                    "description": "String to use for recursive file glob, relative to state directory, for locating Yara rules to use in scan.  Defaults to all files in the state directory",
                     "data_type": "string",
-                    "required": false,
-                    "primary": false,
                     "contains": [
                         "file path"
                     ],
-                    "value_list": [],
-                    "default": "",
                     "order": 0,
-                    "name": "yara_path"
+                    "primary": true
                 },
                 "use_includes": {
-                    "description": "Whether or not rules found can use the include directive to load other files.  Defaults to False.",
+                    "description": "Whether or not rules found can use the include directive to load other files.  Defaults to False",
                     "data_type": "boolean",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "default": "",
-                    "order": 1,
-                    "name": "use_includes"
+                    "order": 1
                 },
                 "scan_dir": {
-                    "description": "Directory to scan for matches.  If not specified, vault_id is required.",
+                    "description": "Directory to scan for matches.  If not specified, vault_id is required",
                     "data_type": "string",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 2,
-                    "name": "scan_dir"
+                    "order": 2
                 },
                 "vault_id": {
-                    "description": "Vault ID of a file to look up for scanning.  If not specified scan_dir is required.",
+                    "description": "Vault ID of a file to look up for scanning.  If not specified scan_dir is required",
                     "data_type": "string",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 2,
-                    "name": "scan_dir"
+                    "order": 3
                 },
                 "fast_mode": {
-                    "description": "Whether or not to have Yara perform a fast mode scan.  Defaults to False.",
+                    "description": "Whether or not to have Yara perform a fast mode scan.  Defaults to False",
                     "data_type": "boolean",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "default": "",
-                    "order": 3,
-                    "name": "fast_mode"
+                    "order": 4
                 },
                 "timeout": {
-                    "description": "How long until a match function in Yara will time out?  Defaults to 60 seconds.",
+                    "description": "How long until a match function in Yara will time out?  Defaults to 60 seconds",
                     "data_type": "numeric",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 4,
-                    "name": "timeout"
+                    "order": 5
                 },
                 "stack_size": {
-                    "description": "Set the stack size used by Yara.  Set with set_config(), interfacing with the C API.",
+                    "description": "Set the stack size used by Yara.  Set with set_config(), interfacing with the C API",
                     "data_type": "numeric",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 5,
-                    "name": "stack_size",
-                    "id": 6,
-                    "param_name": "stack_size"
+                    "order": 6
                 },
                 "max_strings_per_rule": {
                     "description": "Set the Yara configuration to define the number of max_strings_per_rule",
                     "data_type": "numeric",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 6,
-                    "name": "max_strings_per_rule",
-                    "id": 7,
-                    "param_name": "max_strings_per_rule"
+                    "order": 7
                 },
                 "max_match_data": {
                     "description": "Set the max_match_data in Yara configuration",
                     "data_type": "numeric",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 7,
-                    "name": "max_match_data",
-                    "id": 8,
-                    "param_name": "max_match_data"
+                    "order": 8
                 }
             },
             "output": [
@@ -343,36 +285,48 @@
                     "contains": [
                         "file path"
                     ],
-                    "column_name": "yara_path",
+                    "column_name": "Yara Path",
                     "column_order": 0
                 },
                 {
                     "data_path": "action_result.parameter.use_includes",
                     "data_type": "boolean",
-                    "contains": [],
-                    "column_name": "use_includes",
+                    "column_name": "Use Includes",
                     "column_order": 1
                 },
                 {
                     "data_path": "action_result.parameter.scan_dir",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "scan_dir",
+                    "column_name": "Scan Dir",
                     "column_order": 2
                 },
                 {
                     "data_path": "action_result.parameter.fast_mode",
                     "data_type": "boolean",
-                    "contains": [],
-                    "column_name": "fast_mode",
+                    "column_name": "Fast Mode",
                     "column_order": 3
                 },
                 {
                     "data_path": "action_result.parameter.timeout",
                     "data_type": "numeric",
-                    "contains": [],
-                    "column_name": "timeout",
+                    "column_name": "Timeout",
                     "column_order": 4
+                },
+                {
+                    "data_path": "action_result.parameter.vault_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.stack_size",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.parameter.max_strings_per_rule",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.parameter.max_match_data",
+                    "data_type": "numeric"
                 },
                 {
                     "data_path": "action_result.data",
@@ -385,8 +339,12 @@
                 {
                     "data_path": "action_result.status",
                     "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 5
+                    "column_name": "Status",
+                    "column_order": 5,
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -407,15 +365,19 @@
             "versions": "EQ(*)"
         }
     ],
-    "directory": "yara_19ddbea7-c321-43bb-b066-b6c18d431b2c",
-    "version": 1,
-    "appname": "-",
-    "executable": "spawn3",
-    "disabled": false,
-    "pip3_dependencies": {
-        "pypi": [
+    "pip_dependencies": {
+        "wheel": [
             {
-                "module": "yara-python"
+                "module": "yara_python",
+                "input_file": "wheels/py36/yara_python-4.2.3-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+            }
+        ]
+    },
+    "pip39_dependencies": {
+        "wheel": [
+            {
+                "module": "yara_python",
+                "input_file": "wheels/py39/yara_python-4.2.3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
             }
         ]
     }
