@@ -78,7 +78,7 @@ class YaraConnector(BaseConnector):
             ) as filename:
                 filename.write(response.content)
 
-    def _handle_update_sources(self) -> RetVal:
+    def _handle_update_yara_sources(self) -> RetVal:
         """
         Doubles as test connectivity function.  _fetch_yara_source will short-circuit
         and return before overwriting any files.
@@ -105,7 +105,7 @@ class YaraConnector(BaseConnector):
         message = "Connected to all sources!"
         return self._return_with_message(message, action_result)
 
-    def _handle_clear_sources(self, param) -> RetVal:
+    def _handle_clear_yara_sources(self, param) -> RetVal:
         action_result = self.add_action_result(ActionResult(dict(param)))
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         import shutil
@@ -126,7 +126,7 @@ class YaraConnector(BaseConnector):
                     )
         return self._return_with_message("Cleaned up!", action_result)
 
-    def _handle_list_sources(self, param) -> RetVal:
+    def _handle_list_yara_sources(self, param) -> RetVal:
         """
         List all directories in app's state_dir unless user has provided
         param.get("extension").  If it is provided, limit search to
@@ -156,13 +156,13 @@ class YaraConnector(BaseConnector):
                 )
 
         return self._return_with_message("Listed sources!", action_result)
-    
+
     def _handle_test_connectivity(self, param) -> RetVal:
 
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
 
         self.save_progress("Calling update_sources as both actions use the same endpoint")
-        return self._handle_update_sources(param)
+        return self._handle_update_yara_sources(param)
 
     def _handle_yara_scan(self, param) -> RetVal:
         """
@@ -257,13 +257,13 @@ class YaraConnector(BaseConnector):
             ret_val = self._handle_yara_scan(param)
 
         if action_id == "list_yara_sources":
-            ret_val = self._handle_list_sources(param)
+            ret_val = self._handle_list_yara_sources(param)
 
         if action_id == "clear_yara_sources":
-            ret_val = self._handle_clear_sources(param)
+            ret_val = self._handle_clear_yara_sources(param)
 
         if action_id == "update_yara_sources":
-            ret_val = self._handle_update_sources(param)
+            ret_val = self._handle_update_yara_sources(param)
 
         if action_id == "test_connectivity":
             # Not a typo.  This will return early if running test_connectivity
