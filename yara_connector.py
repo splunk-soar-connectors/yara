@@ -21,12 +21,12 @@ from pathlib import Path, PurePath
 from typing import Any, Dict, Tuple
 
 import requests
-import yara
 from phantom import vault
 from phantom.action_result import ActionResult
 from phantom.app import APP_ERROR, APP_SUCCESS
 from phantom.base_connector import BaseConnector
 
+import yara
 import yara_config
 
 
@@ -156,6 +156,13 @@ class YaraConnector(BaseConnector):
                 )
 
         return self._return_with_message("Listed sources!", action_result)
+    
+    def _handle_test_connectivity(self, param) -> RetVal:
+
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+
+        self.save_progress("Calling update_sources as both actions use the same endpoint")
+        return self._handle_update_sources(param)
 
     def _handle_yara_scan(self, param) -> RetVal:
         """
@@ -256,11 +263,11 @@ class YaraConnector(BaseConnector):
             ret_val = self._handle_clear_sources(param)
 
         if action_id == "update_yara_sources":
-            ret_val = self._handle_update_sources()
+            ret_val = self._handle_update_sources(param)
 
         if action_id == "test_connectivity":
             # Not a typo.  This will return early if running test_connectivity
-            ret_val = self._handle_update_sources()
+            ret_val = self._handle_test_connectivity(param)
 
         return ret_val
 
