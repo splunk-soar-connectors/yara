@@ -1,1 +1,6 @@
 **Unreleased**
+* Initial release of application to support downloading Yara rules with 'update yara sources', listing those files with 'list yara sources', clearing them from disk with 'clear yara sources' and scanning with them with 'yara scan'.
+* Added support for 'update yara sources' that expects an asset with Environment variables defined to be a source for downloading one or more files and a value of the URL to download, something that *requests must support*.
+* Added support for 'list yara sources' that will list the application's state directory, by default, and if specified, limit that search to a directory in the app's state directory.  This allows listing sets of malware rules that may all belong to an asset.
+* Added support for 'clear yara sources' that will clear all non-state.json files from the app's state directory.
+* Added support for 'yara scan' that will compile any downloaded rules, cache them for use later and load any cache before recompiling.  It has boolean parameters for supporting include directives and fast mode.  It allows specifying a scan directory or a vault ID.  Also optionally, specify stack size, max strings per rule, timeout and max match data values to configure how Yara works at runtime.
