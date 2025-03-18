@@ -1,6 +1,6 @@
 # File: yara_config.py
 #
-# Copyright (c) 2023 Splunk Inc.
+# Copyright (c) 2023-2025 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,10 +41,4 @@ class YaraConfig:
         so we can initialize Yara with user-provided settings, if provided, or default to YARA_*
         """
 
-        return cls(
-            **{
-                k: int(v)
-                for k, v in params.items()
-                if k in inspect.signature(cls).parameters
-            }
-        )
+        return cls(**{k: int(v) for k, v in params.items() if k in inspect.signature(cls).parameters})

@@ -10,7 +10,7 @@
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "Splunk Community",
-    "license": "Copyright (c) 2023 Splunk Inc.",
+    "license": "Copyright (c) 2023-2025 Splunk Inc.",
     "app_version": "1.0.1",
     "utctime_updated": "2023-03-16T20:22:24.483970Z",
     "package_name": "phantom_yara",
