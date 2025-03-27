@@ -1,0 +1,10 @@
+Splunk SOAR Yara
+Copyright (c) 2023-2025 Splunk Inc.
+
+Third Party Software Attributions:
+
+Name: yara-python
+Version: 4.2.3
+Author: Victor M. Alvarez
+License: Apache 2.0
+

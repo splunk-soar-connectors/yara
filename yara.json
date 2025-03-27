@@ -369,7 +369,7 @@
         "wheel": [
             {
                 "module": "yara_python",
-                "input_file": "wheels/py36/yara_python-4.2.3-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+                "input_file": "wheels/py39/yara_python-4.2.3-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
             }
         ]
     },
