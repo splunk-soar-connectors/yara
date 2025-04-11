@@ -21,12 +21,12 @@ from pathlib import Path, PurePath
 from typing import Any
 
 import requests
+import yara
 from phantom import vault
 from phantom.action_result import ActionResult
 from phantom.app import APP_ERROR, APP_SUCCESS
 from phantom.base_connector import BaseConnector
 
-import yara
 import yara_config
 
 
