@@ -1,7 +1,7 @@
 # Yara
 
 Publisher: Splunk Community \
-Connector Version: 1.0.1 \
+Connector Version: 1.0.2 \
 Product Vendor: Virus Total \
 Product Name: Yara \
 Minimum Product Version: 5.5.0
